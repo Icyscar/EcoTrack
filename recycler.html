@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycler Dashboard | EcoTrack</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .recycler-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .waste-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-collected {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-recycled {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+
+<body onload="initRecyclerDashboard()">
+    <div class="container">
+        <nav class="nav-bar animate-fade">
+            <h2 id="portalTitle" style="margin: 0;">Recycling Partner Portal</h2>
+            <div>
+                <span id="partnerName" style="margin-right: 1rem; font-weight: 600;"></span>
+                <button onclick="logout()" class="btn btn-primary" style="padding: 0.5rem 1rem;">Logout</button>
+            </div>
+        </nav>
+
+        <div style="margin-top: 2rem;" class="animate-fade">
+            <h3>Recyclable Waste Reports</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;">Plan your collection schedule based on user submissions.</p>
+
+            <div id="recyclableReports">
+                <!-- Reports will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/waste.js"></script>
+    <script>
+        function initRecyclerDashboard() {
+            const user = checkAuth();
+            if (!user || user.role !== 'recycler') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Check if individual or agency
+            const recyclerDetails = JSON.parse(localStorage.getItem('ecoRecyclerDetails') || '[]');
+            const details = recyclerDetails.find(r => r.email === user.email);
+            if (details && details.kind === 'individual') {
+                document.getElementById('portalTitle').textContent = 'My Collection Dashboard';
+            }
+
+            document.getElementById('partnerName').textContent = user.name;
+            updateRecyclerUI();
+        }
+
+        function updateRecyclerUI() {
+            const user = checkAuth();
+            const allWaste = JSON.parse(localStorage.getItem('ecoWaste') || '[]');
+            const reportsDiv = document.getElementById('recyclableReports');
+
+            // Filter logic:
+            // 1. Must be recyclable
+            // 2. Either no one has claimed it OR it was claimed by the current user
+            const recyclableItems = allWaste.filter(w =>
+                w.isRecyclable && (!w.claimedBy || w.claimedBy === user.email)
+            );
+
+            if (recyclableItems.length === 0) {
+                reportsDiv.innerHTML = '<p style="text-align: center; color: #888;">No available recyclable waste in your service area.</p>';
+                return;
+            }
+
+            let html = '';
+            recyclableItems.reverse().forEach(item => {
+                const status = item.status || 'Pending Selection';
+                const statusClass = status.toLowerCase().replace(' ', '-');
+                const isClaimedByMe = item.claimedBy === user.email;
+
+                html += `
+                    <div class="waste-card animate-fade" style="${isClaimedByMe ? 'border-right: 5px solid var(--secondary); background: #f0fdfa;' : ''}">
+                        <div>
+                            <strong>${item.type}</strong> (${item.weight} kg) 
+                            ${isClaimedByMe ? '<span style="font-size: 0.7rem; color: var(--secondary); margin-left:10px;">★ Claimed by You</span>' : ''}<br>
+                            <small>Reported on: ${item.date} | Household: User_${item.userId.toString().slice(-4)}</small>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="status-badge status-${statusClass}">${status}</span>
+                            <div style="margin-top: 0.5rem;">
+                                ${status === 'Pending Selection' ?
+                        `<button onclick="updateStatus(${item.id}, 'Collected')" class="btn btn-outline" style="font-size: 0.8rem; padding: 4px 10px;">Claim & Collect</button>` :
+                        status === 'Collected' ?
+                            `<button onclick="updateStatus(${item.id}, 'Recycled')" class="btn btn-primary" style="font-size: 0.8rem; padding: 4px 10px;">Mark as Recycled</button>` :
+                            `<span style="color: var(--success); font-weight: 600;">✅ Successfully Processed</span>`
+                    }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            reportsDiv.innerHTML = html;
+        }
+
+        function updateStatus(wasteId, newStatus) {
+            const user = checkAuth();
+            const allWaste = JSON.parse(localStorage.getItem('ecoWaste') || '[]');
+            const index = allWaste.findIndex(w => w.id === wasteId);
+
+            if (index !== -1) {
+                // If collecting, set the claim
+                if (newStatus === 'Collected') {
+                    allWaste[index].claimedBy = user.email;
+                }
+
+                // Security check: ensure only the owner can update subsequent statuses
+                if (allWaste[index].claimedBy && allWaste[index].claimedBy !== user.email) {
+                    alert('Error: This item is already being processed by another partner.');
+                    return;
+                }
+
+                allWaste[index].status = newStatus;
+                localStorage.setItem('ecoWaste', JSON.stringify(allWaste));
+                updateRecyclerUI();
+            }
+        }
+    </script>
+</body>
+
+</html>

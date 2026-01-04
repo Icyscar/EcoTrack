@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainability Tips | EcoTrack</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tip-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .tip-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tip-card h3 {
+            color: var(--secondary);
+            border-bottom: 2px solid #f1f8e9;
+            padding-bottom: 0.5rem;
+        }
+
+        .tip-card p {
+            font-size: 0.95rem;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body onload="checkAuth()">
+    <div class="container">
+        <header style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;"
+            class="animate-fade">
+            <div>
+                <h1>Sustainability Guide</h1>
+                <p>Simple steps for a responsible lifestyle.</p>
+            </div>
+            <a href="dashboard.html" class="btn btn-outline">Back to Dashboard</a>
+        </header>
+
+        <div class="tips-grid">
+            <div class="tip-card animate-fade" style="animation-delay: 0.1s;">
+                <h3>♻️ Reduce & Reuse</h3>
+                <p>Always carry a reusable shopping bag and a water bottle. Avoiding single-use plastics can reduce your
+                    waste by up to 20kg per year!</p>
+            </div>
+            <div class="tip-card animate-fade" style="animation-delay: 0.2s;">
+                <h3>🍎 Composting</h3>
+                <p>Organic waste makes up 40% of household trash. Start a small compost bin for fruit peels and veggies
+                    to nutrient-rich soil for plants.</p>
+            </div>
+            <div class="tip-card animate-fade" style="animation-delay: 0.3s;">
+                <h3>📦 Smart Packaging</h3>
+                <p>Buy in bulk to reduce excess packaging. Look for products labeled with "Recyclable Material" or
+                    "Minimal Packaging".</p>
+            </div>
+            <div class="tip-card animate-fade" style="animation-delay: 0.4s;">
+                <h3>🔌 Energy Consumption</h3>
+                <p>Responsible consumption isn't just about waste. Unplug electronics when not in use to reduce
+                    'vampire' energy drain.</p>
+            </div>
+            <div class="tip-card animate-fade" style="animation-delay: 0.5s;">
+                <h3>👕 Slow Fashion</h3>
+                <p>Think before you buy. Choose quality over quantity. Donate old clothes or repurpose them into
+                    cleaning rags to extend their life.</p>
+            </div>
+            <div class="tip-card animate-fade" style="animation-delay: 0.6s;">
+                <h3>💧 Water Wisdom</h3>
+                <p>Fix leaks immediately. A dripping tap can waste 15,000 liters of water a year. Use a bucket instead
+                    of a hose for car washes.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

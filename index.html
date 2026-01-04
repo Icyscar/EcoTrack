@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTrack | Responsible Consumption & Production</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 15vh auto;
+        }
+
+        .header-box {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-box h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sdg-badge {
+            background: #e1f5fe;
+            color: #01579b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-box animate-fade">
+            <h1>EcoTrack</h1>
+            <span class="sdg-badge">SDG 12: Responsible Consumption</span>
+            <p style="margin-top: 1rem;">Track. Reduce. Recycle. Save the Planet.</p>
+        </div>
+
+        <div class="auth-container glass-panel animate-fade" style="animation-delay: 0.2s;">
+            <h3 style="text-align: center; margin-bottom: 1.5rem;">Official Login</h3>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+                Accounts are managed by the Administrator.
+            </p>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

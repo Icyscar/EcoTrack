@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | EcoTrack</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .waste-list {
+            margin-top: 2rem;
+        }
+
+        .waste-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tag-recycled {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .tag-waste {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body onload="initDashboard()">
+    <div class="container">
+        <nav class="nav-bar animate-fade">
+            <h2 style="margin: 0;">EcoTrack Dashboard</h2>
+            <div>
+                <span id="userName" style="margin-right: 1rem; font-weight: 600;"></span>
+                <a href="tips.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">Tips</a>
+                <button onclick="logout()" class="btn btn-primary"
+                    style="padding: 0.5rem 1rem; margin-left: 0.5rem;">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-grid">
+            <!-- Left: Stats & Logging -->
+            <div class="animate-fade" style="animation-delay: 0.1s;">
+                <div class="glass-panel">
+                    <h3>Log Daily Waste</h3>
+                    <form id="wasteForm">
+                        <div class="form-group">
+                            <label for="wasteType">Type of Waste</label>
+                            <select id="wasteType" required>
+                                <option value="Plastic">Plastic</option>
+                                <option value="Paper">Paper</option>
+                                <option value="Organic">Organic / Food</option>
+                                <option value="Metal">Metal</option>
+                                <option value="Electronic">Electronic (E-Waste)</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" step="0.1" placeholder="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="isRecyclable" style="width: auto;"> Recyclable?
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Record Entry</button>
+                    </form>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <div class="stat-card">
+                        <small>Total Generated</small>
+                        <h2 id="totalWeight">0.0 kg</h2>
+                    </div>
+                    <div class="stat-card" style="border-left-color: var(--secondary);">
+                        <small>Recycled Rate</small>
+                        <h2 id="recycleRate">0%</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: History -->
+            <div class="glass-panel animate-fade" style="animation-delay: 0.2s;">
+                <h3>Your Waste Patterns</h3>
+                <div id="wasteHistory" class="waste-list">
+                    <p style="text-align: center; color: #888;">No data recorded yet. Start logging!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/waste.js"></script>
+    <script>
+        function initDashboard() {
+            const user = checkAuth();
+            if (user) {
+                if (user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                    return;
+                }
+                document.getElementById('userName').textContent = "Hi, " + user.name.split(' ')[0];
+                updateWasteUI();
+            }
+        }
+    </script>
+</body>
+
+</html>
