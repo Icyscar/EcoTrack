@@ -163,12 +163,44 @@
 
                     <form id="adminRegForm">
                         <div class="form-group">
-                            <label for="regName">Name</label>
-                            <input type="text" id="regName" placeholder="Full name of household user" required>
+                            <label for="regRole">Select Stakeholder Type</label>
+                            <select id="regRole" required style="border: 2px solid var(--primary); font-weight: 600;">
+                                <option value="user">🏠 Household Customer (Waste Generator)</option>
+                                <option value="recycler">🚛 Recycling Agency / Partner (Waste Collector)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regName">Name / Title</label>
+                            <input type="text" id="regName" placeholder="Full name or Legal identity" required>
                         </div>
                         <div class="form-group">
                             <label for="regEmail">Official Email</label>
                             <input type="email" id="regEmail" placeholder="auth@ecotrack.com" required>
+                        </div>
+                        <div id="recyclerFields"
+                            style="display: none; background: #e0f2f1; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px dashed var(--secondary);">
+                            <h4 style="margin-bottom: 1rem; color: #00695c;">Partner Specifications</h4>
+                            <div class="form-group">
+                                <label for="recKind">Partner Category</label>
+                                <select id="recKind">
+                                    <option value="entity">Entity (Fleet / Organization)</option>
+                                    <option value="individual">Individual Partner (Micro-Recycler)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="recLocation">Primary Service Area</label>
+                                <input type="text" id="recLocation" placeholder="e.g. South District, Block A">
+                            </div>
+                            <div class="form-group">
+                                <label for="recType">Material Expertise</label>
+                                <select id="recType">
+                                    <option value="All">All Recyclables</option>
+                                    <option value="Plastic">Plastic & Polymers</option>
+                                    <option value="E-Waste">Electronics (E-Waste)</option>
+                                    <option value="Organic">Organic & Biowaste</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="regPassword">Initial Password</label>
@@ -177,8 +209,8 @@
 
 
 
-                        <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">Onboard
-                            Household User</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem;">Confirm &
+                            Onboard Account</button>
                     </form>
                 </div>
             </div>
@@ -218,19 +250,35 @@
             updateAdminUI();
         }
 
-
+        document.getElementById('regRole').addEventListener('change', function (e) {
+            document.getElementById('recyclerFields').style.display =
+                e.target.value === 'recycler' ? 'block' : 'none';
+        });
 
         document.getElementById('adminRegForm').addEventListener('submit', function (e) {
             e.preventDefault();
+            const role = document.getElementById('regRole').value;
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
 
-            const res = registerUser(name, email, password, 'user');
+            const res = registerUser(name, email, password, role);
 
             if (res.success) {
-                alert('Success: ' + name + ' is now registered as a Household User.');
+                if (role === 'recycler') {
+                    const recyclerData = {
+                        email: email,
+                        kind: document.getElementById('recKind').value,
+                        location: document.getElementById('recLocation').value || 'Unassigned',
+                        type: document.getElementById('recType').value
+                    };
+                    const recyclers = JSON.parse(localStorage.getItem('ecoRecyclerDetails') || '[]');
+                    recyclers.push(recyclerData);
+                    localStorage.setItem('ecoRecyclerDetails', JSON.stringify(recyclers));
+                }
+                alert('Success: ' + name + ' is now registered as a ' + (role === 'user' ? 'Household' : 'Recycler') + '.');
                 e.target.reset();
+                document.getElementById('recyclerFields').style.display = 'none';
                 updateAdminUI();
             } else {
                 alert('Error: ' + res.message);
@@ -290,11 +338,11 @@
                 let html = '';
                 agencies.reverse().forEach(u => {
                     const recData = recyclerDetails.find(r => r.email === u.email);
-                    const isAgency = recData ? recData.kind === 'agency' : true;
+                    const label = recData ? (recData.kind === 'entity' ? '🏢 Recycler Entity' : '🚶 Individual Partner') : '🚛 Recycler';
                     html += `
                         <div class="stakeholder-item agency-item">
                             <div>
-                                <span class="role-badge role-agency">${isAgency ? '🚛 Recycling Agency' : '🚶 Individual Partner'}</span><br>
+                                <span class="role-badge role-agency">${label}</span><br>
                                 <strong style="font-size: 1.1rem;">${u.name}</strong><br>
                                 <small style="color: #666;">📧 ${u.email}</small>
                                 ${recData ? `<br><small style="color: #00796b; font-weight: 600;">📍 ${recData.location} | 🏷️ ${recData.type}</small>` : ''}
