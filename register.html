@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | EcoTrack</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 10vh auto;
+        }
+
+        .header-box {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-box h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sdg-badge {
+            background: #e1f5fe;
+            color: #01579b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-box animate-fade">
+            <h1>EcoTrack</h1>
+            <span class="sdg-badge">Join the Green Movement</span>
+            <p style="margin-top: 1rem;">Create your household account to start tracking waste.</p>
+        </div>
+
+        <div class="auth-container glass-panel animate-fade" style="animation-delay: 0.2s;">
+            <h3 style="text-align: center; margin-bottom: 1.5rem;">User Registration</h3>
+
+            <form id="regForm">
+                <div class="form-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" placeholder="John Doe" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email Address</label>
+                    <input type="email" id="regEmail" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #666;">
+                Already have an account? <a href="index.html" style="color: var(--primary); font-weight: 600;">Sign
+                    In</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('regForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            // Registration using the existing registerUser function from auth.js
+            const res = registerUser(name, email, password, 'user');
+
+            if (res.success) {
+                alert('Account created successfully! You can now log in.');
+                window.location.href = 'index.html';
+            } else {
+                alert('Error: ' + res.message);
+            }
+        });
+    </script>
+</body>
+
+</html>
